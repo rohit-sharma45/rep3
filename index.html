@@ -75,8 +75,8 @@ input[type=number]{width:74px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{color:var(--mut);text-align:left;font-weight:400;padding:5px 4px}
 td{padding:6px 4px;border-top:1px solid var(--ln);overflow-wrap:anywhere}
-#chart{width:100%;height:170px;display:block}
-#rr{width:100%;height:170px;display:block;background:#0c1730;border-radius:8px}
+canvas{width:100%;height:170px;display:block}
+svg{width:100%;height:170px;display:block;background:#0c1730;border-radius:8px}
 .zones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .z{background:var(--pan2);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
 .z div{flex:1;min-width:0}
@@ -277,14 +277,9 @@ $('tS').onclick=()=>useLayer(2);
 
 const trailLine=L.polyline([],{color:'#3b82f6',weight:4}).addTo(map);
 const routeLine=L.polyline([],{color:'#c4a7ff',weight:4,dashArray:'8 6'}).addTo(map);
-
-/* Google-Maps-style red pin for the tracker location. */
-const pinIcon=L.divIcon({
- className:'',iconSize:[36,46],iconAnchor:[18,46],tooltipAnchor:[0,-40],
- html:'<svg width="36" height="46" viewBox="0 0 36 46" style="width:36px;height:46px;display:block;background:none"><path d="M18 0C8 0 0 8 0 18c0 13 18 28 18 28s18-15 18-28C36 8 28 0 18 0z" fill="#ea4335" stroke="#fff" stroke-width="2"/><circle cx="18" cy="18" r="7" fill="#fff"/></svg>'
-});
-const marker=L.marker([0,0],{icon:pinIcon,zIndexOffset:1000})
- .bindTooltip('Current Location',{permanent:true,direction:'top',offset:[0,-4]});
+const marker=L.circleMarker([0,0],{
+ radius:9,color:'#fff',weight:3,fillColor:'#2f6df6',fillOpacity:1
+}).bindTooltip('Current Location',{permanent:true,direction:'top'});
 
 const st={
  trail:[],speeds:[],log:[],zones:[],route:[],alerts:[],showAll:false,
@@ -324,7 +319,7 @@ function zoneStyle(z){
  const color=isBreach?'#ff354f':(z.restr?'#ffad32':'#00ff9d');
  return {
   color,fillColor:color,weight:4,opacity:z.on?1:.4,
-  fillOpacity:z.on?.24:.04,dashArray:z.restr?'8 5':null,
+    fillOpacity:z.on?.24:.04,dashArray:z.restr?'8 5':null,
   lineCap:'round',lineJoin:'round'
  };
 }
@@ -654,7 +649,7 @@ function finishBoundary(){
  z.c.bindPopup('<b>'+escapeHtml(name)+'</b><br>Custom boundary drawn by you.');
  clearBoundaryPreview();st.zones.push(z);setMode(null);
  renderZones();render();saveCfg();toast('Your custom boundary has been saved.');
-}
+ }
 
 /* Generate random polygon coordinates within the visible map. */
 function makeRandomPolygon(){
